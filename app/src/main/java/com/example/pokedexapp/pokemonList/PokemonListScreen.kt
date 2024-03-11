@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.pokedexapp.R
@@ -175,20 +176,25 @@ fun PokemonEntry(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(data = entry.pokemonName)
+                    .data(data = entry.imageUrl)
                     .crossfade(true)
-                    .target { drawable ->
-                        pokemonListViewModel.calcDominantColor(
-                            drawable = drawable,
-                            onFinish = { color ->
-                                dominantColorState = color
-                            }
-                        )
-                    }.build(),
+//                    .target { drawable ->
+//                        pokemonListViewModel.calcDominantColor(
+//                            drawable = drawable,
+//                            onFinish = { color ->
+//                                dominantColorState = color
+//                            }
+//                        )
+//                    }
+                    .build(),
                 placeholder = painterResource(id = R.drawable.loading_img),
                 contentDescription = "Image of ${entry.pokemonName}",
                 modifier = Modifier.size(120.dp)
             )
+            val context = LocalContext.current
+           // val imageLoader = ImageLoader(context) // Get the ImageLoader instance
+
+           // val result = imageLoader()
             Text(
                 text = entry.pokemonName,
                 textAlign = TextAlign.Center,
@@ -216,9 +222,6 @@ fun PokeDexGridScreen(
         contentPadding = PaddingValues(16.dp),
         columns = GridCells.Fixed(count = 2),
         content = {
-            item {
-                Text(text = "abc")
-            }
             items(pokemonList) { pokemonEntry ->
                 if (!endReached) {
                     PokemonEntry(

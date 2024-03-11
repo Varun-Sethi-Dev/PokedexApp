@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -26,7 +27,7 @@ class PokemonListViewModel @Inject constructor(val repository: NetworkPokemonRep
     ViewModel() {
     private var currPage = 0
     var isLoading by mutableStateOf(false)
-    var pokemonList by mutableStateOf<List<PokedexListEntry>>(listOf())
+    var pokemonList = mutableStateListOf<PokedexListEntry>()
     var loadError by mutableStateOf("")
     var endReached by mutableStateOf(false)
 
@@ -49,7 +50,7 @@ class PokemonListViewModel @Inject constructor(val repository: NetworkPokemonRep
                         }
 
                         val url =
-                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$number.png"
+                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
                         PokedexListEntry(
                             pokemonName = entry.name.uppercase(locale = Locale.ROOT),
                             imageUrl = url,
