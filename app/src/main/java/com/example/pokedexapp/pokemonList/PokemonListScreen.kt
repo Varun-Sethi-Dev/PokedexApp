@@ -193,7 +193,6 @@ fun PokemonEntry(
             )
             val context = LocalContext.current
            // val imageLoader = ImageLoader(context) // Get the ImageLoader instance
-
            // val result = imageLoader()
             Text(
                 text = entry.pokemonName,
