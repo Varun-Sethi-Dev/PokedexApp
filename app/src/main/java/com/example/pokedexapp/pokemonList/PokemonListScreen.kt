@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -214,7 +216,7 @@ fun PokeDexGridScreen(
         contentPadding = PaddingValues(16.dp),
         columns = GridCells.Fixed(count = 2),
         content = {
-            item { 
+            item {
                 Text(text = "abc")
             }
             items(pokemonList) { pokemonEntry ->
@@ -230,6 +232,33 @@ fun PokeDexGridScreen(
             }
         }
     )
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        }
+        if (loadError.isNotEmpty()) {
+            RetrySection(error = loadError) {
+                pokemonListViewModel.loadPokemonPaginated()
+            }
+        }
+    }
+}
+
+@Composable
+fun RetrySection(
+    error: String,
+    onRetry: () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = error, color = Color.Red, fontSize = 18.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = { onRetry() }) {
+            Text(text = "Retry")
+        }
+    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)

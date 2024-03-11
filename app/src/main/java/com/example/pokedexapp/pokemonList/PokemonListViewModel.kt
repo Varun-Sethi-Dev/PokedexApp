@@ -57,9 +57,9 @@ class PokemonListViewModel @Inject constructor(val repository: NetworkPokemonRep
                         )
                     }
                     currPage++
-                    pokemonList += pokeDexEntries
                     loadError = ""
                     isLoading = false
+                    pokemonList += pokeDexEntries
 
                 }
                 /*is Resource.Loading -> {}
