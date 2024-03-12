@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,13 +50,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.example.pokedexapp.R
 import com.example.pokedexapp.models.PokedexListEntry
 import com.example.pokedexapp.ui.theme.RobotoCondensed
+import kotlin.coroutines.coroutineContext
 
 @Composable
-fun PokemonListScreen(navController: NavController) {
+fun PokemonListScreen(
+    navController: NavController,
+    pokemonListViewModel: PokemonListViewModel = hiltViewModel<PokemonListViewModel>()
+) {
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
@@ -104,6 +112,7 @@ fun PokemonListScreen(navController: NavController) {
 
             SearchBar(hint = "Search...", modifier = Modifier.padding(16.dp), onSearch = {
                 //Network request
+                pokemonListViewModel.searchPokemonList(it)
             })
             Spacer(modifier = Modifier.height(16.dp))
             PokeDexGridScreen(navController = navController)
@@ -135,7 +144,7 @@ fun SearchBar(
                 )
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .onFocusChanged { focusState ->
-                    isHintDisplayed = !focusState.isFocused
+                    isHintDisplayed = (!focusState.isFocused && textState.isEmpty())
                 })
         if (isHintDisplayed) {
             Text(
@@ -178,22 +187,103 @@ fun PokemonEntry(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(data = entry.imageUrl)
                     .crossfade(true)
-//                    .target { drawable ->
-//                        pokemonListViewModel.calcDominantColor(
-//                            drawable = drawable,
-//                            onFinish = { color ->
-//                                dominantColorState = color
-//                            }
-//                        )
-//                    }
+                    .target { drawable ->
+                        pokemonListViewModel.calcDominantColor(
+                            drawable = drawable,
+                            onFinish = { color ->
+                                dominantColorState = color
+                            }
+                        )
+                    }
                     .build(),
                 placeholder = painterResource(id = R.drawable.loading_img),
                 contentDescription = "Image of ${entry.pokemonName}",
                 modifier = Modifier.size(120.dp)
             )
-            val context = LocalContext.current
-           // val imageLoader = ImageLoader(context) // Get the ImageLoader instance
-           // val result = imageLoader()
+            Text(
+                text = entry.pokemonName,
+                textAlign = TextAlign.Center,
+                fontFamily = RobotoCondensed,
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun PokemonEntry1(
+    entry: PokedexListEntry,
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    pokemonListViewModel: PokemonListViewModel = hiltViewModel<PokemonListViewModel>()
+) {
+    val defaultDominantColor = MaterialTheme.colorScheme.surface
+    var dominantColorState by remember {
+        mutableStateOf(defaultDominantColor)
+    }
+    Box(contentAlignment = Alignment.Center,
+        modifier = modifier
+            .shadow(5.dp, RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(dominantColorState, defaultDominantColor)
+                )
+            )
+            .aspectRatio(1f)
+            .clickable {
+                navController
+                    .navigate(
+                        route = "pokemon_detail_screen/${dominantColorState.toArgb()}/${entry.pokemonName}"
+                    )
+            }) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(data = entry.imageUrl)
+                    .placeholder(R.drawable.loading_img)
+                    .crossfade(true)
+                    .build(),
+                onState = {
+                    if (it is AsyncImagePainter.State.Success) {
+                        pokemonListViewModel.calcDominantColor(drawable = it.result.drawable,
+                            onFinish = { color ->
+                                dominantColorState = color
+                            })
+                    }
+                }
+            )
+//            Image(
+//                painter = rememberAsyncImagePainter(
+//                    model = ImageRequest.Builder(LocalContext.current)
+//                        .data(data = entry.imageUrl)
+//                        .placeholder(R.drawable.loading_img)
+//                        .crossfade(true)
+//                        .build()
+//                ), contentDescription = "Image of ${entry.pokemonName}",
+            //           modifier = Modifier.size(120.dp)
+//            )
+
+
+//            val state = painter.state
+//            if (state is AsyncImagePainter.State.Success) {
+//                val drawable = state.result.drawable
+//                pokemonListViewModel.calcDominantColor(drawable = drawable,
+//                    onFinish = { color ->
+//                        dominantColorState = color
+//                    })
+//            }
+
+            Image(
+                painter = painter,
+                //placeholder = painterResource(id = R.drawable.loading_img),
+                contentDescription = "Image of ${entry.pokemonName}",
+                modifier = Modifier.size(120.dp)
+            )
             Text(
                 text = entry.pokemonName,
                 textAlign = TextAlign.Center,
@@ -213,24 +303,29 @@ fun PokeDexGridScreen(
     navController: NavController
 ) {
     val pokemonList = remember { pokemonListViewModel.pokemonList }
-    val isLoading = remember { pokemonListViewModel.isLoading }
-    val loadError = remember { pokemonListViewModel.loadError }
+    val isLoading = pokemonListViewModel.isLoading
+    val loadError = pokemonListViewModel.loadError
     val endReached = remember { pokemonListViewModel.endReached }
+    val isSearching = pokemonListViewModel.isSearching
+    //some of the properties were nit remembered bec. we want them to always
+    // take in the latest value from viewModel even for recomposition not the same initial values
     LazyVerticalGrid(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp),
         columns = GridCells.Fixed(count = 2),
         content = {
-            items(pokemonList) { pokemonEntry ->
-                if (!endReached) {
-                    PokemonEntry(
-                        entry = pokemonEntry,
-                        navController = navController,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .fillMaxWidth()
-                    )
+            val itemCount = pokemonList.size
+            items(itemCount) {
+                if (it >= itemCount - 1 && !endReached && !isLoading && !isSearching) {
+                    pokemonListViewModel.loadPokemonPaginated()
                 }
+                PokemonEntry1(
+                    entry = pokemonList[it],
+                    navController = navController,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth()
+                )
             }
         }
     )
@@ -240,12 +335,12 @@ fun PokeDexGridScreen(
     ) {
         if (isLoading) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        }
-        if (loadError.isNotEmpty()) {
+        } else if (loadError.isNotEmpty()) {
             RetrySection(error = loadError) {
                 pokemonListViewModel.loadPokemonPaginated()
             }
         }
+
     }
 }
 

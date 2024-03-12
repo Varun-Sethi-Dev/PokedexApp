@@ -7,9 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
@@ -18,6 +17,7 @@ import com.example.pokedexapp.repository.NetworkPokemonRepository
 import com.example.pokedexapp.utils.Constants.PAGE_SIZE
 import com.example.pokedexapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -30,9 +30,50 @@ class PokemonListViewModel @Inject constructor(val repository: NetworkPokemonRep
     var pokemonList = mutableStateListOf<PokedexListEntry>()
     var loadError by mutableStateOf("")
     var endReached by mutableStateOf(false)
+    private var cachedPokemonList = mutableStateListOf<PokedexListEntry>()
+    private var isSearchStarting = true // before search has started i.e. search bar is empty
+    var isSearching by mutableStateOf(false) // when searching i.e. search bar is not empty
 
     init {
-        loadPokemonPaginated()
+        viewModelScope.launch(Dispatchers.IO) {
+            loadPokemonPaginated()
+        }
+    }
+
+    fun searchPokemonList(query: String) {
+        /* To check that had we already entered the text in search bar then
+         in that case the original pokemon list would be in the cachedPokemonList
+        */
+        val listToSearch = if (isSearchStarting) pokemonList else cachedPokemonList
+
+        //We will not do the searching on main thread as its cpu intensive
+        viewModelScope.launch(Dispatchers.Default) {
+            if (query.isEmpty()) {//i.e. we started typing in the search bar but then erased all
+                pokemonList.clear()
+                pokemonList.addAll(cachedPokemonList)
+                isSearchStarting = true
+                isSearching = false
+                return@launch
+            } else {
+                val result = listToSearch.filter {
+                    it.pokemonName.contains(
+                        query.trim(),
+                        ignoreCase = true
+                    ) || it.number.toString() == query.trim()
+                }
+                if (isSearchStarting) {
+                    // when its the 1st time search
+                    cachedPokemonList.clear()
+                    cachedPokemonList.addAll(pokemonList)
+                    isSearchStarting = false
+                }
+                pokemonList.clear()
+                pokemonList.addAll(result)
+                isSearching = true
+            }
+        }
+
+
     }
 
     fun loadPokemonPaginated() {
@@ -61,18 +102,19 @@ class PokemonListViewModel @Inject constructor(val repository: NetworkPokemonRep
                     loadError = ""
                     isLoading = false
                     pokemonList += pokeDexEntries
-
                 }
                 /*is Resource.Loading -> {}
                 This code for loading is  not required here because we are doing it with our
                 isLoading var for loading logic
                 * */
-
                 is Resource.Error -> {
-                    loadError = result.message!!
                     isLoading = false
+                    loadError = result.message!!
                 }
 
+                is Resource.Loading -> {
+
+                }
             }
         }
     }

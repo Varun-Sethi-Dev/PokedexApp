@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.pokedexapp.data.remote.responses.PokemonList
+import com.example.pokedexapp.pokemonDetail.PokemonDetailScreen
 import com.example.pokedexapp.pokemonList.PokemonListScreen
 import com.example.pokedexapp.ui.theme.PokedexAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
                             navBackStackEntry.arguments?.getString("pokemonName")
                                 ?: "No Name Null Case"
                         }
-
+                        PokemonDetailScreen(dominantColor, pokemonName, navController = navController)
                     }
                 }
 
