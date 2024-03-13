@@ -23,7 +23,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class PokemonListViewModel @Inject constructor(val repository: NetworkPokemonRepository) :
+class PokemonListViewModel @Inject constructor(private val repository: NetworkPokemonRepository) :
     ViewModel() {
     private var currPage = 0
     var isLoading by mutableStateOf(false)

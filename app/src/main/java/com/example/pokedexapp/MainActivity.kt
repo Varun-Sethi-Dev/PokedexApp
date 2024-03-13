@@ -3,6 +3,8 @@ package com.example.pokedexapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavType
@@ -51,7 +53,11 @@ class MainActivity : ComponentActivity() {
                             navBackStackEntry.arguments?.getString("pokemonName")
                                 ?: "No Name Null Case"
                         }
-                        PokemonDetailScreen(dominantColor, pokemonName, navController = navController)
+                        PokemonDetailScreen(
+                            dominantColor,
+                            pokemonName,
+                            navController = navController
+                        )
                     }
                 }
 

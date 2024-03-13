@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -28,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,18 +44,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.example.pokedexapp.R
 import com.example.pokedexapp.models.PokedexListEntry
 import com.example.pokedexapp.ui.theme.RobotoCondensed
-import kotlin.coroutines.coroutineContext
 
 @Composable
 fun PokemonListScreen(
@@ -238,6 +232,7 @@ fun PokemonEntry1(
                     .navigate(
                         route = "pokemon_detail_screen/${dominantColorState.toArgb()}/${entry.pokemonName}"
                     )
+
             }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -317,7 +312,10 @@ fun PokeDexGridScreen(
             val itemCount = pokemonList.size
             items(itemCount) {
                 if (it >= itemCount - 1 && !endReached && !isLoading && !isSearching) {
-                    pokemonListViewModel.loadPokemonPaginated()
+                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    pokemonListViewModel.loadPokemonPaginated()// Not the best way find better ways !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    //as this might be a side effect consider using paging library for compose
                 }
                 PokemonEntry1(
                     entry = pokemonList[it],

@@ -1,6 +1,5 @@
 package com.example.pokedexapp.pokemonDetail
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.pokedexapp.data.remote.responses.Pokemon
 import com.example.pokedexapp.repository.NetworkPokemonRepository
