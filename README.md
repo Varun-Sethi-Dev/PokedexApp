@@ -14,7 +14,6 @@
 Go to the [Releases](https://github.com/Varun-Sethi-Dev/PokedexApp/releases/tag/release) to download the latest APK.
 
 <img src="/preview/preview.gif" align="right" width="320"/>
-##
 ## Tech stack & Open-source libraries
 - Minimum SDK level 21
 - [Kotlin](https://kotlinlang.org/) based, [Coroutines](https://github.com/Kotlin/kotlinx.coroutines) for asynchronous.
