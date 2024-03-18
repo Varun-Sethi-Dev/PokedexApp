@@ -7,13 +7,13 @@
 </br>
 
 <p align="center">
-<img src="/previews/screenshot.png"/>
+<img src="/preview/screenshot.png"/>
 </p>
 
 ## Download
-Go to the [Releases](https://github.com/skydoves/Pokedex/releases) to download the latest APK.
+Go to the [Releases](https://github.com/Varun-Sethi-Dev/PokedexApp/releases/tag/release) to download the latest APK.
 
-<img src="/previews/preview.gif" align="right" width="320"/>
+<img src="/preview/preview.gif" align="right" width="320"/>
 
 ## Tech stack & Open-source libraries
 - Minimum SDK level 21
@@ -58,28 +58,6 @@ With this loosely coupled architecture, you can increase the reusability of comp
 ![architecture](figure/figure2.png)
 
 The UI layer consists of UI elements to configure screens that could interact with users and [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) that holds app states and restores data when configuration changes.
-- UI elements observe the data flow via [DataBinding](https://developer.android.com/topic/libraries/data-binding), which is the most essential part of the MVVM architecture. 
-- With [Bindables](https://github.com/skydoves/bindables), which is an Android DataBinding kit for notifying data changes, you can implement two-way binding, and data observation in XML very clean.
-
-### Data Layer
-
-![architecture](figure/figure3.png)
-
-The data Layer consists of repositories, which include business logic, such as querying data from the local database and requesting remote data from the network. It is implemented as an offline-first source of business logic and follows the [single source of truth](https://en.wikipedia.org/wiki/Single_source_of_truth) principle.<br>
-
-**Pokedex** is an offline-first app is an app that is able to perform all, or a critical subset of its core functionality without access to the internet. 
-So users don't need to be up-to-date on the network resources every time and it will decrease users' data consumption. For further information, you can check out [Build an offline-first app](https://developer.android.com/topic/architecture/data-layer/offline-first).
-
-## Modularization
-
-![architecture](figure/figure4.png)
-
-**Pokedex** adopted modularization strategies below:
-
-- **Reusability**: Modulizing reusable codes properly enable opportunities for code sharing and limits code accessibility in other modules at the same time.
-- **Parallel Building**: Each module can be run in parallel and it reduces the build time.
-- **Strict visibility control**: Modules restrict to expose dedicated components and access to other layers, so it prevents they're being used outside the module
-- **Decentralized focusing**: Each developer team can assign their dedicated module and they can focus on their own modules.
 
 For more information, check out the [Guide to Android app modularization](https://developer.android.com/topic/modularization).
 
