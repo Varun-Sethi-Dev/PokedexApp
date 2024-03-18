@@ -7,7 +7,7 @@
 </br>
 
 <p align="center">
-<img src="/previews/screenshot.png"/>
+<img src="/preview/screenshot.png"/>
 </p>
 
 ## Download
