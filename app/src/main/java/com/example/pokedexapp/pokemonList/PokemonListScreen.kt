@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -120,8 +121,8 @@ fun PokemonListScreen(
 fun SearchBar(
     modifier: Modifier = Modifier, hint: String = "", onSearch: (String) -> Unit
 ) {
-    var textState by remember { mutableStateOf("") }
-    var isHintDisplayed by remember { mutableStateOf(hint != "") }
+    var textState by rememberSaveable { mutableStateOf("") }
+    var isHintDisplayed by rememberSaveable { mutableStateOf(hint != "") }
     Box(modifier = modifier) {
         BasicTextField(value = textState,
             onValueChange = {

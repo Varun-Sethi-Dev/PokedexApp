@@ -119,8 +119,8 @@ dependencies {
     //Dagger - Hilt for dependency injection it requires kapt for kotlin annotation processing
     implementation("com.google.dagger:hilt-android:2.51")
     kapt("com.google.dagger:hilt-android-compiler:2.51")
-    // implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03") is now not needed
-    // we can directly implement viewmodel aware injection using annotation in new version
+    // implementation("androidx.hilt:hilt-lifecycle-view model:1.0.0-alpha03") is now not needed
+    // we can directly implement view model aware injection using annotation in new version
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     // both the compiler does the same thing ine uses androidx and other hilt for it
